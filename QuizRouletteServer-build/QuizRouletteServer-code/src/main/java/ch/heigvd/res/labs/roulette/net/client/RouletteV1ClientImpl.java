@@ -20,6 +20,8 @@ import java.util.logging.Logger;
  * This class implements the client side of the protocol specification (version 1).
  * 
  * @author Olivier Liechti
+ * @author Di Pietro & Gallandat (modified)
+ *
  */
 public class RouletteV1ClientImpl implements IRouletteV1Client {
 
@@ -38,7 +40,6 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public void disconnect() throws IOException {
-    LOG.info("IN DISCONNECT()");
       if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_BYE);
         w.flush();
@@ -53,13 +54,11 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public boolean isConnected() {
-      LOG.info("IN ISCONNECTED()");
       return socket != null && socket.isConnected();
   }
 
   @Override
   public void loadStudent(String fullname) throws IOException {
-    LOG.info("IN LOADSTUDENT()");
     if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
         w.flush();
@@ -81,7 +80,6 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public void loadStudents(List<Student> students) throws IOException {
-      LOG.info("IN LOADSTUDENTS()");
       if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
         w.flush();
@@ -104,7 +102,6 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public Student pickRandomStudent() throws EmptyStoreException, IOException {
-      LOG.info("IN PICKRANDOMSTUDENT()");
       if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_RANDOM);
           w.flush();
@@ -115,27 +112,27 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
           }catch(IOException e){
               throw new EmptyStoreException();
           }
-        
       }
       throw new IOException("Client not connected");
   }
 
   @Override
   public int getNumberOfStudents() throws IOException {
-      LOG.info("IN GETNUMBEROFSTUDENTS()");
       if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_INFO);
           w.flush();
-          InfoCommandResponse icr = JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class);
-          return icr.getNumberOfStudents();   
+          return JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class).getNumberOfStudents();
       }
       throw new IOException("Client not connected");
   }
 
   @Override
   public String getProtocolVersion() throws IOException {
-      LOG.info("IN GETPROTOCOLVERSION()");
-      return RouletteV1Protocol.VERSION;
+      if(this.isConnected()){
+          w.println(RouletteV1Protocol.CMD_INFO);
+          w.flush();
+          return JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class).getProtocolVersion();
+      }
+      throw new IOException("Client not connected");
   }
-
 }
