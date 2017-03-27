@@ -38,71 +38,89 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public void disconnect() throws IOException {
-    if(socket != null){
+    if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_BYE);
-        w.flush();
         r.readLine();
+        w.flush();
+        socket.close();
+        w.close();
+        r.close();
     }
+    else
+        throw new IOException("Client already disconnected");
+    
   }
 
   @Override
   public boolean isConnected() {
-      return socket != null;
+      return socket != null && socket.isConnected();
   }
 
   @Override
   public void loadStudent(String fullname) throws IOException {
-    if(socket != null){
+    if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
-        r.readLine();
+        
+        if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_START))
+            throw new IOException();
+        
         w.println(fullname);
         w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
+        
+        if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
+            throw new IOException();
         w.flush();
-        r.readLine();
     }
+    else
+        throw new IOException("Client not connected");
   }
 
   @Override
   public void loadStudents(List<Student> students) throws IOException {
-      if(socket != null){
-          w.println(RouletteV1Protocol.CMD_LOAD);
-          r.readLine();
-          
-          for(Student s : students){
-              w.println(s);
-          }
-          
-          w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
-          w.flush();
-          r.readLine();
+      if(this.isConnected()){
+        w.println(RouletteV1Protocol.CMD_LOAD);
+        if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_START))
+          throw new IOException();
+
+        for(Student s : students){
+            w.println(s);
+        }
+
+        w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
+        if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
+            throw new IOException();
+        w.flush();
       }
+      else
+        throw new IOException("Client not connected");
   }
 
   @Override
   public Student pickRandomStudent() throws EmptyStoreException, IOException {
-      if(socket != null){
+      if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_RANDOM);
-          w.flush();
           
           try{
               Student randStudent = JsonObjectMapper.parseJson(r.readLine(), Student.class);
+              w.flush();
               return randStudent;
           }catch(IOException e){
               throw new EmptyStoreException();
           }
+        
       }
       throw new IOException();
   }
 
   @Override
   public int getNumberOfStudents() throws IOException {
-      if(socket != null){
-          w.println(RouletteV1Protocol.CMD_RANDOM);
-          w.flush();
+      if(this.isConnected()){
+          w.println(RouletteV1Protocol.CMD_INFO);
           InfoCommandResponse icr = JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class);
+          w.flush();
           return icr.getNumberOfStudents();   
       }
-      throw new IOException();
+      throw new IOException("Client not connected");
   }
 
   @Override
