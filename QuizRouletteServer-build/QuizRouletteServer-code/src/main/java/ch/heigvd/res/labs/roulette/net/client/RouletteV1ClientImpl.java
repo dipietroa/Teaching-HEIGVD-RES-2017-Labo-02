@@ -60,7 +60,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
   @Override
   public void loadStudent(String fullname) throws IOException {
     LOG.info("IN LOADSTUDENT()");
-      if(this.isConnected()){
+    if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
         w.flush();
         
@@ -68,7 +68,9 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
             throw new IOException();
         
         w.println(fullname);
+        w.flush();
         w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
+        w.flush();
         
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
             throw new IOException();
@@ -82,14 +84,17 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
       LOG.info("IN LOADSTUDENTS()");
       if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
+        w.flush();
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_START))
           throw new IOException();
 
         for(Student s : students){
-            w.println(s);
+            w.println(s.getFullname());
+            w.flush();
         }
 
         w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
+        w.flush();
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
             throw new IOException();
       }
@@ -102,17 +107,17 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
       LOG.info("IN PICKRANDOMSTUDENT()");
       if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_RANDOM);
+          w.flush();
           
           try{
               Student randStudent = JsonObjectMapper.parseJson(r.readLine(), Student.class);
-              w.flush();
               return randStudent;
           }catch(IOException e){
               throw new EmptyStoreException();
           }
         
       }
-      throw new IOException();
+      throw new IOException("Client not connected");
   }
 
   @Override
@@ -120,8 +125,8 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
       LOG.info("IN GETNUMBEROFSTUDENTS()");
       if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_INFO);
-          InfoCommandResponse icr = JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class);
           w.flush();
+          InfoCommandResponse icr = JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class);
           return icr.getNumberOfStudents();   
       }
       throw new IOException("Client not connected");
