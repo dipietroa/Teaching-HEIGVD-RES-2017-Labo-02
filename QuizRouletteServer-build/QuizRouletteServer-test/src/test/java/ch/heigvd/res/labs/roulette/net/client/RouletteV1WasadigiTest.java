@@ -8,6 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.junit.Ignore;
 
 /**
  * This class contains automated tests to validate the client and the server
@@ -15,6 +16,7 @@ import org.junit.rules.ExpectedException;
  * 
  * @author Olivier Liechti
  */
+@Ignore
 public class RouletteV1WasadigiTest {
 
   @Rule

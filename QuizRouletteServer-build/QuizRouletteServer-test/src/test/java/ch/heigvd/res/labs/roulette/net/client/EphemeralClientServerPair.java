@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.rules.ExternalResource;
+import org.junit.Ignore;
 
 /**
  *
  * @author Olivier Liechti
  */
+@Ignore
 public class EphemeralClientServerPair extends ExternalResource {
 
   RouletteServer server;

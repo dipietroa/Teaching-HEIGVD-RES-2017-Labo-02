@@ -10,6 +10,7 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Ignore;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Arnold von Bauer Gauss
  */
+@Ignore
 public class RouletteV2GaussianBlursTest {
 
     @Rule
