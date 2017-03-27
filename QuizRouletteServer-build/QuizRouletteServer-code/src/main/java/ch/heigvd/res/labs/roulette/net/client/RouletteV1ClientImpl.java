@@ -33,14 +33,14 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
     socket = new Socket(server, port);
     r = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     w = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-    r.readLine();
+    LOG.info(r.readLine());
   }
 
   @Override
   public void disconnect() throws IOException {
-    if(this.isConnected()){
+    LOG.info("IN DISCONNECT()");
+      if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_BYE);
-        r.readLine();
         w.flush();
         socket.close();
         w.close();
@@ -53,13 +53,16 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public boolean isConnected() {
+      LOG.info("IN ISCONNECTED()");
       return socket != null && socket.isConnected();
   }
 
   @Override
   public void loadStudent(String fullname) throws IOException {
-    if(this.isConnected()){
+    LOG.info("IN LOADSTUDENT()");
+      if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
+        w.flush();
         
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_START))
             throw new IOException();
@@ -69,7 +72,6 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
         
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
             throw new IOException();
-        w.flush();
     }
     else
         throw new IOException("Client not connected");
@@ -77,6 +79,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public void loadStudents(List<Student> students) throws IOException {
+      LOG.info("IN LOADSTUDENTS()");
       if(this.isConnected()){
         w.println(RouletteV1Protocol.CMD_LOAD);
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_START))
@@ -89,7 +92,6 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
         w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
         if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
             throw new IOException();
-        w.flush();
       }
       else
         throw new IOException("Client not connected");
@@ -97,6 +99,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public Student pickRandomStudent() throws EmptyStoreException, IOException {
+      LOG.info("IN PICKRANDOMSTUDENT()");
       if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_RANDOM);
           
@@ -114,6 +117,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public int getNumberOfStudents() throws IOException {
+      LOG.info("IN GETNUMBEROFSTUDENTS()");
       if(this.isConnected()){
           w.println(RouletteV1Protocol.CMD_INFO);
           InfoCommandResponse icr = JsonObjectMapper.parseJson(r.readLine(), InfoCommandResponse.class);
@@ -125,9 +129,8 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
   @Override
   public String getProtocolVersion() throws IOException {
+      LOG.info("IN GETPROTOCOLVERSION()");
       return RouletteV1Protocol.VERSION;
   }
-
-
 
 }
