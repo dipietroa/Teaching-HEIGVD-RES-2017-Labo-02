@@ -22,12 +22,9 @@ public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRoule
 
   @Override
   public void clearDataStore() throws IOException {
-    if(this.isConnected()){
         w.println(RouletteV2Protocol.CMD_CLEAR);
         w.flush();
         LOG.info(r.readLine());
-    }
-    throw new IOException("Client not connected");
   }
 
   @Override
@@ -45,7 +42,6 @@ public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRoule
           throw new IOException("Client not connected");
       }
   }
-  
   @Override
   public void disconnect() throws IOException {
       if(this.isConnected()){
