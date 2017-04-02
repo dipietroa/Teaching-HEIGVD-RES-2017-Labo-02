@@ -4,7 +4,10 @@ import ch.heigvd.res.labs.roulette.data.JsonObjectMapper;
 import ch.heigvd.res.labs.roulette.data.Student;
 import ch.heigvd.res.labs.roulette.data.StudentsList;
 import ch.heigvd.res.labs.roulette.net.protocol.RouletteV2Protocol;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRouletteV2Client {
   private static final Logger LOG = Logger.getLogger(RouletteV2ClientImpl.class.getName());
-    
+
   @Override
   public void clearDataStore() throws IOException {
     if(this.isConnected()){
