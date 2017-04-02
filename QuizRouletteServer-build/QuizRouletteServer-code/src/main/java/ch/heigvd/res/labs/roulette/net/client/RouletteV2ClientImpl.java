@@ -12,6 +12,7 @@ import java.util.logging.Logger;
  * This class implements the client side of the protocol specification (version 2).
  *
  * @author Olivier Liechti
+ * @author modified by Gallouche & dipietroa
  */
 public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRouletteV2Client {
   private static final Logger LOG = Logger.getLogger(RouletteV2ClientImpl.class.getName());
@@ -32,8 +33,7 @@ public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRoule
           w.println(RouletteV2Protocol.CMD_LIST);
           w.flush();
           try{
-              List<Student> result = JsonObjectMapper.parseJson(r.readLine(), StudentsList.class).getStudents();
-              return result;
+              return JsonObjectMapper.parseJson(r.readLine(), StudentsList.class).getStudents();
           }catch(IOException ie){
               throw new IOException("Error on getting students list");
           }
@@ -42,19 +42,4 @@ public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRoule
           throw new IOException("Client not connected");
       }
   }
-  
-  @Override
-  public void disconnect() throws IOException {
-      if(this.isConnected()){
-        w.println(RouletteV2Protocol.CMD_BYE);
-        w.flush();
-        LOG.info(r.readLine());
-        socket.close();
-        w.close();
-        r.close();
-    }
-    else
-        throw new IOException("Client already disconnected");
-  }
-  
 }
