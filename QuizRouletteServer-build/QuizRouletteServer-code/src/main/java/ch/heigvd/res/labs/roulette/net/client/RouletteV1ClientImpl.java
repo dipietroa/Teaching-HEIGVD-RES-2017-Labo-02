@@ -70,9 +70,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
         w.flush();
         w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
         w.flush();
-        
-        if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
-            throw new IOException();
+        r.readLine();
     }
     else
         throw new IOException("Client not connected");
@@ -93,8 +91,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
 
         w.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
         w.flush();
-        if(!r.readLine().equals(RouletteV1Protocol.RESPONSE_LOAD_DONE))
-            throw new IOException();
+        r.readLine();
       }
       else
         throw new IOException("Client not connected");
