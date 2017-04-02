@@ -59,5 +59,4 @@ public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRoule
     else
         throw new IOException("Client already disconnected");
   }
-  
 }
