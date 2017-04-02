@@ -71,7 +71,7 @@ public class RouletteV2ClientHandler implements IClientHandler {
                   break;
 
               case RouletteV2Protocol.CMD_BYE:
-                  ByeCommandResponse bcr = new ByeCommandResponse("sucess",cmdCounter);
+                  ByeCommandResponse bcr = new ByeCommandResponse("success",cmdCounter);
                   writer.println(JsonObjectMapper.toJson(bcr));
                   writer.flush();
                   done = true;
