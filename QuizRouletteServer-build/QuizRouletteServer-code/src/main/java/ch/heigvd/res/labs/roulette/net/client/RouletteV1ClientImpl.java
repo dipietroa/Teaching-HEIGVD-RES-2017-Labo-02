@@ -38,19 +38,24 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
     LOG.info(r.readLine());
   }
 
-  @Override
-  public void disconnect() throws IOException {
-      if(this.isConnected()){
-        w.println(RouletteV1Protocol.CMD_BYE);
-        w.flush();
-        socket.close();
-        w.close();
-        r.close();
+    @Override
+    public void disconnect() throws IOException {
+        if(this.isConnected()) {
+            w.println(RouletteV1Protocol.CMD_BYE);
+            w.flush();
+        }
+
+        try {
+            w.close();
+            r.close();
+            socket.close();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, null, e);
+        }
+        w = null;
+        r = null;
+        socket = null;
     }
-    else
-        throw new IOException("Client already disconnected");
-    
-  }
 
   @Override
   public boolean isConnected() {
