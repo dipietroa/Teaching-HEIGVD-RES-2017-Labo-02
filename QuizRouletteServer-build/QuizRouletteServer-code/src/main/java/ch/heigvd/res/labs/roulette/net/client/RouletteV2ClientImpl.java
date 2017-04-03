@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -44,15 +45,15 @@ public class RouletteV2ClientImpl extends RouletteV1ClientImpl implements IRoule
   }
   @Override
   public void disconnect() throws IOException {
-      if(this.isConnected()){
         w.println(RouletteV2Protocol.CMD_BYE);
         w.flush();
         LOG.info(r.readLine());
-        socket.close();
-        w.close();
-        r.close();
-    }
-    else
-        throw new IOException("Client already disconnected");
+        try{
+            socket.close();
+            w.close();
+            r.close();
+        }catch (Exception e){
+            LOG.log(Level.SEVERE,null,e);
+        }
   }
 }
